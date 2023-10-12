@@ -24,6 +24,8 @@ class SaleOrder(models.Model):
         for appointment in self:
             appointment.invoice_count = len(appointment.invoice_ids)
 
+
+
     def action_view_sale_appointment(self):
         self.ensure_one()
         return {
@@ -53,15 +55,24 @@ class SaleOrder(models.Model):
         for appointment in self:
             appointment.invoice_count = len(appointment.invoice_ids)
 
-
     def action_invoice(self):
-        self.ensure_one()  # Tek bir kayıt için çalıştığından emin olun.
+        self.ensure_one()
+
+        # Create a new invoice
+        invoice = self.env['account.move'].create({
+            'appointment_id': self.appointment_id.id,  # Set the appointment on the invoice
+            # Other fields for the invoice, such as partner_id, product lines, etc.
+        })
+
+        # Open the created invoice in form view
+        print(invoice)
 
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Invoices',
+            'name': 'Invoice',
             'res_model': 'account.move',
-            'view_mode': 'tree,form',
-            'domain': [('appointment_id', '=', self.id)],
-            'context': {'default_appointment_id': self.id},
+            'view_mode': 'form',
+            'res_id': invoice.id,
+            'context': {'create': False, 'edit': False},
+            'target': 'current',
         }

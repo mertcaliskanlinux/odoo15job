@@ -117,6 +117,30 @@ class Appointment(models.Model):
                     'price_total'))
             rec.pending_amount = pending_amount
 
+    def action_sale_order(self):
+        self.ensure_one()  # Ensure you're working with a single record.
+        action = {
+            'type': 'ir.actions.act_window',
+            'name': 'Sale Orders',
+            'res_model': 'sale.order',
+            'view_mode': 'tree,form',
+            'domain': [('appointment_id', '=', self.id)],  # Filter by appointment
+            'context': {'default_appointment_id': self.id},  # Set the default appointment
+        }
+        return action
+
+    def action_invoice(self):
+        self.ensure_one()  # Ensure you're working with a single record.
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Invoices',
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'domain': [('appointment_id', '=', self.id)],  # Filter by appointment
+            'context': {'default_appointment_id': self.id},  # Set the default appointment
+            'stage': 'posted',
+        }
+
     @api.depends('appointment_id')
     def _compute_invoice_count(self):
         for appointment in self:
