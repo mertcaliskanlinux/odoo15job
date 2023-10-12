@@ -6,6 +6,8 @@ class SaleOrder(models.Model):
 
     appointment_id = fields.Many2one('dr_patients.appointment', string='Appointment')
     appointment_count = fields.Integer(string='Appointment', compute='_compute_appointment_count')
+    invoice_count = fields.Integer(string='Invoice', compute='_compute_invoice_count')
+    invoce_ids = fields.One2many('account.move', 'appointment_id', string='Invoice')
 
     @api.depends('appointment_id')
     def _compute_appointment_count(self):
@@ -34,5 +36,23 @@ class SaleOrder(models.Model):
             'res_id': self.appointment_id.id,
             'context': {'create': True, 'edit': False},
             'target': 'current',
+        }
+
+    @api.depends('invoice_ids')
+    def _compute_invoice_count(self):
+        for appointment in self:
+            appointment.invoice_count = len(appointment.invoice_ids)
+
+
+    def action_invoice(self):
+        self.ensure_one()  # Tek bir kayıt için çalıştığından emin olun.
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Invoices',
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'domain': [('appointment_id', '=', self.id)],
+            'context': {'default_appointment_id': self.id},
         }
 

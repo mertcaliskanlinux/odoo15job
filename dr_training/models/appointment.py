@@ -21,9 +21,9 @@ class Appointment(models.Model):
     pending_amount = fields.Float(string="Pending Amount", compute="_compute_pending_amount", store=True)
     sale_order_line_ids = fields.One2many('sale.order.line', 'order_id', string="Sale Order Line")
     sale_order_count = fields.Integer(string="Sale Orders", compute="_compute_sale_order_count")
-    invoice_count = fields.Integer(string="Invoices", compute="_compute_invoice_count")
     payment_count = fields.Integer(string="Payments",compute="_compute_payment_count")
     invoice_ids = fields.One2many('account.move', 'appointment_id', string="Invoices")
+    invoice_count = fields.Integer(string="Invoices", compute="_compute_invoice_count")
 
     @api.depends('patient')
     def _compute_patient_full_name(self):
