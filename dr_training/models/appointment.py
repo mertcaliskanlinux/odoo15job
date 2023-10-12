@@ -23,6 +23,7 @@ class Appointment(models.Model):
     sale_order_count = fields.Integer(string="Sale Orders", compute="_compute_sale_order_count")
     invoice_count = fields.Integer(string="Invoices", compute="_compute_invoice_count")
     payment_count = fields.Integer(string="Payments",compute="_compute_payment_count")
+    invoice_ids = fields.One2many('account.move', 'appointment_id', string="Invoices")
 
     @api.depends('patient')
     def _compute_patient_full_name(self):
@@ -153,10 +154,12 @@ class Appointment(models.Model):
     #         payment_count = len(appointment.sale_order_line_ids.mapped('order_id').mapped('payment_ids'))
     #         appointment.payment_count = payment_count
 
-    @api.depends('appointment_id.invoice_ids')
+
+
+    @api.depends('invoice_ids')
     def _compute_invoice_count(self):
-        for rec in self:
-            rec.invoice_count = len(rec.appointment_id.invoice_ids)
+        for appointment in self:
+            appointment.invoice_count = len(appointment.invoice_ids)
 
 
 

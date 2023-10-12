@@ -13,6 +13,8 @@ class Invoice(models.Model):
         for order in self:
             order.appointment_count = len(order.appointment_id) if order.appointment_id else 0
 
+
+
     def action_view_sale_appointment(self):
         self.ensure_one()
         return {
