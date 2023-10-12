@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+
+
+    <record id="doctor_tree" model="ir.ui.view">
+            <field name="name">hospital.doctor.tree</field>
+            <field name="model">hospital.doctor</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="full_name"/>
+                    <field name="department"/>
+                    <field name="age"/>
+                </tree>
+            </field>
+    </record>
+
+
+
+
+    <menuitem id="menu_doctor"
+        name="Doctor List"
+        parent="menu_doctor_master"
+        sequence="1"/>
+
+
+</odoo>

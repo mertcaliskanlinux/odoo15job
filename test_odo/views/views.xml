@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+  <data>
+
+    <menuitem id="menu_dr_training_root" 
+        name="Doctor and Patient" 
+        sequence="0"/>
+
+
+    <menuitem id="menu_doctor_master" 
+        name="Doctors" 
+        parent="menu_dr_training_root" 
+        sequence="10"/>
+
+
+
+
+  </data>
+</odoo>

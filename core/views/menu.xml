@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  
+        <menuitem id="menu_doctor_root" 
+                name="Doctor" 
+                sequence="0"/>
+
+        <menuitem id="menu_doctor_master" 
+                name="Doctor Detail"  
+                parent="menu_doctor_root" 
+                sequence="0"/>
+
+
+        <menuitem id="menu_doctor" 
+                name="Doctor"
+                action="action_doctor" 
+                parent="menu_doctor_master" 
+                sequence="0"/>
+
+</odoo>
