@@ -9,7 +9,6 @@
                 <field name="appointment_id" widget="many2one" options="{'no_create': True, 'no_quick_create': True}"/>
                 <field name="appointment_count" widget="statinfo" options="{}"/>
             </field>
-<!--            <button name="action_view_sale_appointment" string="View Appointments" type="object" class="oe_stat_button"/>-->
         </field>
     </record>
 </odoo>

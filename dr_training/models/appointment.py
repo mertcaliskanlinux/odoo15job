@@ -19,11 +19,14 @@ class Appointment(models.Model):
 
     total_amount = fields.Float(string="Total Amount", compute="_compute_total_amount", store=True)
     pending_amount = fields.Float(string="Pending Amount", compute="_compute_pending_amount", store=True)
-    sale_order_line_ids = fields.One2many('sale.order.line', 'order_id', string="Sale Order Line")
-    sale_order_count = fields.Integer(string="Sale Orders", compute="_compute_sale_order_count")
-    payment_count = fields.Integer(string="Payments",compute="_compute_payment_count")
     invoice_ids = fields.One2many('account.move', 'appointment_id', string="Invoices")
     invoice_count = fields.Integer(string="Invoices", compute="_compute_invoice_count")
+    sale_order_line_ids = fields.One2many('sale.order.line', 'order_id', string="Sale Order Line")
+    sale_order_count = fields.Integer(string="Sale Orders", compute="_compute_sale_order_count")
+
+
+
+
 
     @api.depends('patient')
     def _compute_patient_full_name(self):
@@ -36,15 +39,14 @@ class Appointment(models.Model):
             appointment.doctor_full_name = ', '.join(
                 appointment.doctor_id.mapped('full_name')) if appointment.doctor_id else ""
 
-    def action_in_progress(self):
-        self.write({'stage': 'in_progress'})
-
-    @api.depends('sale_order_line_ids.order_id')
+    @api.depends('appointment_id')
     def _compute_sale_order_count(self):
         for appointment in self:
-            appointment.sale_order_count = len(appointment.sale_order_line_ids.mapped('order_id'))
+            sale_order_count = self.env['sale.order'].search_count([('appointment_id', '=', appointment.id)])
+            appointment.sale_order_count = sale_order_count
 
-
+    def action_in_progress(self):
+        self.write({'stage': 'in_progress'})
 
     def action_done(self):
         self.write({'stage': 'done'})
@@ -96,37 +98,10 @@ class Appointment(models.Model):
             'view_mode': 'tree,form',
             'domain': [('appointment_id', '=', self.id)],
             'context': {'default_appointment_id': self.id},
+            'stage': 'posted',
+
         }
 
-    def action_payment(self):
-        for appointment in self:
-            # Hasta (patient) veya müşteri (customer) kaydı oluşturun (örnek olarak)
-
-            patient_name = appointment.patient.full_name if appointment.patient else ''
-            customer_values = {
-                'name': f"{patient_name}",
-                # Diğer gerekli müşteri bilgilerini burada ekleyin
-            }
-            customer = self.env['res.partner'].create(customer_values)
-
-            # Ödeme (payment) kaydı oluşturun
-            payment_values = {
-                'partner_id': customer.id,  # Oluşturulan müşteri kaydının ID'sini kullanın
-                'payment_date': fields.Date.today(),
-                # Diğer gerekli ödeme (payment) bilgilerini burada ekleyin
-            }
-            payment = self.env['account.payment'].create(payment_values)
-
-            # Ödeme (payment) kaydı formunu açın
-            self.env.context = dict(self.env.context, default_payment_id=payment.id)
-            return {
-                'name': 'Payment',
-                'type': 'ir.actions.act_window',
-                'res_model': 'account.payment',
-                'res_id': payment.id,
-                'view_mode': 'form',
-                'target': 'current',
-            }
 
     @api.depends('sale_order_line_ids')
     def _compute_total_amount(self):
@@ -142,24 +117,12 @@ class Appointment(models.Model):
                     'price_total'))
             rec.pending_amount = pending_amount
 
-    @api.depends('sale_order_line_ids.order_id')
-    def _compute_sale_order_count(self):
-        for rec in self:
-            rec.sale_order_count = len(rec.sale_order_line_ids.mapped('order_id'))
-
-
-    # @api.depends('sale_order_line_ids.order_id')
-    # def _compute_payment_count(self):
-    #     for appointment in self:
-    #         payment_count = len(appointment.sale_order_line_ids.mapped('order_id').mapped('payment_ids'))
-    #         appointment.payment_count = payment_count
-
-
-
-    @api.depends('invoice_ids')
+    @api.depends('appointment_id')
     def _compute_invoice_count(self):
         for appointment in self:
-            appointment.invoice_count = len(appointment.invoice_ids)
+            invoice_count = self.env['account.move'].search_count([('appointment_id', '=', appointment.id)])
+            appointment.invoice_count = invoice_count
+
 
 
 
