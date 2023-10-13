@@ -6,6 +6,7 @@ from odoo import models, fields, api, exceptions
 
 
 class Department(models.Model):
+
     _name = "dr_patients.department"
     _description = "Department"
 

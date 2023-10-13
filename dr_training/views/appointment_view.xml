@@ -26,15 +26,13 @@
                     <sheet>
 
                         <div class="oe_button_box" name="button_box">
-                            <button class="oe_stat_button" type="object" name="action_sale_order" icon="fa-usd">
+                            <button class="oe_stat_button" type="object" name="action_view_invoices" icon="fa-usd">
                                 <field string="Sales" name="sale_order_count" widget="statinfo"/>
                             </button>
-<!--                            <button name="action_view_invoices" string="View Invoices" type="object" icon="fa-file-text-o"/>-->
-
-
                             <button class="oe_stat_button" type="object" name="action_view_invoices" icon="fa-list-alt">
                                 <field string="Invoices" name="invoice_count" widget="statinfo"/>
                             </button>
+
 <!--                            <button class="oe_stat_button" type="object" name="action_payment" icon="fa-money">-->
 <!--                                <field string="Payments" name="payment_count" widget="statinfo"/>-->
 <!--                            </button>-->

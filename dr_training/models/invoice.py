@@ -10,11 +10,6 @@ class Invoice(models.Model):
     invoice_count = fields.Integer(string='Invoice', compute='_compute_invoice_count')
     invoice_ids = fields.One2many('account.move', 'appointment_id', string='Invoices')
 
-    @api.depends('appointment_id')
-    def _compute_appointment_count(self):
-        for order in self:
-            order.appointment_count = len(order.appointment_id) if order.appointment_id else 0
-
 
 
     def action_view_sale_appointment(self):
@@ -29,9 +24,10 @@ class Invoice(models.Model):
             'target': 'current',
         }
 
-    @api.depends('invoice_ids')
-    def _compute_invoice_count(self):
-        for order in self:
-            order.invoice_count = len(order.invoice_ids)
-            print(f"order.invoice_count: {order.invoice_count} order.invoice_ids: {order.invoice_ids} order.appointment_id: {order.appointment_id}")
+
+    @api.depends('appointment_id')
+    def _compute_appointment_count(self):
+        for invoice in self:
+            invoice.appointment_count = len(invoice.appointment_id) if invoice.appointment_id else 0
+
 

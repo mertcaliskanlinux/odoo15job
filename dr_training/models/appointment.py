@@ -1,16 +1,17 @@
+# -*- coding: utf-8 -*-
+
 from odoo import models, fields, api, exceptions
 
 class Appointment(models.Model):
+
     _name = "dr_patients.appointment"
     _description = "Appointment"
-
 
     appointment_date_time = fields.Datetime(string="Appointment Date & Time", required=True)
     code = fields.Char(string='Code', required=True, index=True, copy=False, default=lambda self: self.env['ir.sequence'].next_by_code('dr_patients.appointment') or 'New')
     doctor_id = fields.Many2many(comodel_name="dr_patients.doctor", string="Doctor")
     patient = fields.Many2one(comodel_name="dr_patients.patient", string="Patient", required=True)
     stage = fields.Selection(string="Stage", selection=[('draft', 'Draft'), ('in_progress', 'In Progress'), ('done', 'Done'),('cancel', 'Cancel')], default='draft', required=True)
-
     treatment = fields.One2many('dr_patients.treatment', 'appointment', string='Treatments')
     patient_full_name = fields.Char(string="Patient Name", compute="_compute_patient_full_name", store=True)
     doctor_full_name = fields.Char(string="Doctor Name", compute="_compute_doctor_full_name", store=True)
@@ -20,7 +21,7 @@ class Appointment(models.Model):
     sale_order_line_ids = fields.One2many('sale.order.line', 'appointment', string="Sale Order Line")
     sale_order_count = fields.Integer(string="Sale Orders", compute="_compute_sale_order_count")
     sale_order_id = fields.Many2one(comodel_name="sale.order", string="Sale Order")
-    invoice_ids = fields.One2many('account.move', 'appointment_id', string='Invoice', compute='_compute_invoice_ids')
+    invoice_ids = fields.Many2one('account.move', string='Invoice', index=True)
     invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
 
     @api.depends('invoice_ids')
@@ -28,19 +29,36 @@ class Appointment(models.Model):
         for appointment in self:
             appointment.invoice_ids = self.env['account.move'].search([('appointment_id', '=', appointment.id)])
 
-    @api.depends('invoice_ids')
+    @api.depends('invoice_count')
     def _compute_invoice_count(self):
         for appointment in self:
             appointment.invoice_count = len(appointment.invoice_ids)
 
+
     def action_view_invoices(self):
-        invoices = self.sale_order_id.mapped('invoice_ids')
+        self.ensure_one()
+
+        # Add your comment or note here
+        comment = "This is an example comment."
+
+        # Create a new invoice with the comment
+        invoice = self.env['account.move'].create({
+            'appointment_id': self.appointment_id.id,
+            # Other fields for the invoice, such as partner_id, product lines, etc.
+            'note': comment,  # Add your comment here
+        })
+
+        # Optionally, you can manually post (confirm) the invoice
+        invoice.post()
+
         return {
-            'name': 'Invoices',
-            'view_mode': 'tree,form',
-            'res_model': 'account.move',
-            'domain': [('id', 'in', invoices.ids)],
             'type': 'ir.actions.act_window',
+            'name': 'Invoice',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': invoice.id,
+            'context': {'create': False},
+            'target': 'current',
         }
 
     @api.depends('patient')
@@ -77,7 +95,6 @@ class Appointment(models.Model):
             raise exceptions.ValidationError("You cannot delete a done appointment")
         return super(Appointment, self).unlink()
 
-
     @api.model
     def create(self, vals):
         if vals.get('code', 'New') == 'New':
@@ -91,7 +108,7 @@ class Appointment(models.Model):
                 raise exceptions.ValidationError('The Code must be unique.')
 
     def action_sale_order(self):
-        self.ensure_one() # Tek bir kayıt için çalıştığından emin olun.
+        self.ensure_one()
         action = {
             'type': 'ir.actions.act_window',
             'name': 'Sale Orders',
@@ -101,7 +118,6 @@ class Appointment(models.Model):
             'context': {'default_appointment_id': self.id},
         }
         return action
-
 
 
 
