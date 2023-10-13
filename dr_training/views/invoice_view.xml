@@ -5,10 +5,13 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
+
             <field name="ref" position="after">
                 <field name="appointment_id" widget="many2one" options="{'no_create': True, 'no_quick_create': True}"/>
-                <field name="appointment_count" widget="statinfo" options="{}"/>
+                <field name="appointment_count"/>
             </field>
+
+
         </field>
     </record>
 </odoo>

@@ -71,7 +71,8 @@ class SaleOrder(models.Model):
             'target': 'current',
         }
 
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    appointment = fields.Many2one('dr_patients.appointment', string='Appointment')
+    appointment_id = fields.Many2one('dr_patients.appointment', string='Appointment')

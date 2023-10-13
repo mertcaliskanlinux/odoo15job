@@ -4,11 +4,12 @@ class Invoice(models.Model):
 
     _name = 'account.move'
     _inherit = 'account.move'
-
-    appointment_id = fields.Many2one('dr_patients.appointment', string='Appointment')
+    # bu burada çünkü appointment_id şu işe yarıyor ki appointment_id ile invoice_id birbirine bağlı olsun
+    appointment_id = fields.Many2one('dr_patients.appointment', string='Appointment') #one2many
+    #appointment id's ise şu işe yarıyor ki appointment_id ile invoice_id birbirine bağlı olsun
+    appointment_ids = fields.One2many('dr_patients.appointment', 'invoice_id', string='Appointment', compute='_compute_appointment_ids')
     appointment_count = fields.Integer(string='Appointments', compute='_compute_appointment_count')
     invoice_count = fields.Integer(string='Invoice', compute='_compute_invoice_count')
-    invoice_ids = fields.One2many('account.move', 'appointment_id', string='Invoices')
 
 
 

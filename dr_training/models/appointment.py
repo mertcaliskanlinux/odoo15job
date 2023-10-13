@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, exceptions
+from .sale import  SaleOrder
+
+
 
 class Appointment(models.Model):
 
@@ -16,13 +19,13 @@ class Appointment(models.Model):
     patient_full_name = fields.Char(string="Patient Name", compute="_compute_patient_full_name", store=True)
     doctor_full_name = fields.Char(string="Doctor Name", compute="_compute_doctor_full_name", store=True)
     is_readonly = fields.Boolean(string="Is Readonly", compute="_compute_is_readonly")
-    appointment_id = fields.Many2one(comodel_name="sale.order", string="Sale Order")
     total_amount = fields.Float(string="Total Amount", compute="_compute_total_amount", store=True)
-    sale_order_line_ids = fields.One2many('sale.order.line', 'appointment', string="Sale Order Line")
     sale_order_count = fields.Integer(string="Sale Orders", compute="_compute_sale_order_count")
     sale_order_id = fields.Many2one(comodel_name="sale.order", string="Sale Order")
-    invoice_ids = fields.Many2one('account.move', string='Invoice', index=True)
+    appointment_id = fields.Many2one('dr_patients.appointment', string='Appointment')
+    invoice_ids = fields.One2many('account.move', 'appointment_id', string='Invoice', compute='_compute_invoice_ids')
     invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
+
 
     @api.depends('invoice_ids')
     def _compute_invoice_ids(self):
@@ -34,31 +37,19 @@ class Appointment(models.Model):
         for appointment in self:
             appointment.invoice_count = len(appointment.invoice_ids)
 
-
     def action_view_invoices(self):
-        self.ensure_one()
 
-        # Add your comment or note here
-        comment = "This is an example comment."
+        invoices = self.invoice_ids
+        print(f"invoices: {invoices}")
 
-        # Create a new invoice with the comment
-        invoice = self.env['account.move'].create({
-            'appointment_id': self.appointment_id.id,
-            # Other fields for the invoice, such as partner_id, product lines, etc.
-            'note': comment,  # Add your comment here
-        })
 
-        # Optionally, you can manually post (confirm) the invoice
-        invoice.post()
 
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Invoice',
+            'name': 'Invoices',
+            'view_mode': 'tree,form',
             'res_model': 'account.move',
-            'view_mode': 'form',
-            'res_id': invoice.id,
-            'context': {'create': False},
-            'target': 'current',
+            'domain': [('id', 'in', invoices.ids)],
+            'type': 'ir.actions.act_window',
         }
 
     @api.depends('patient')
@@ -95,6 +86,7 @@ class Appointment(models.Model):
             raise exceptions.ValidationError("You cannot delete a done appointment")
         return super(Appointment, self).unlink()
 
+
     @api.model
     def create(self, vals):
         if vals.get('code', 'New') == 'New':
@@ -108,17 +100,24 @@ class Appointment(models.Model):
                 raise exceptions.ValidationError('The Code must be unique.')
 
     def action_sale_order(self):
-        self.ensure_one()
+        self.ensure_one()  # Ensure that it works for a single record.
+
+        # Create a new Sale Order record in the 'draft' state
+        created_sale_order = self.env['sale.order'].create({
+            'partner_id': self.patient.id,
+            'appointment_id': self.id,  # Link the Sale Order to the current appointment
+        })
+
+        # Open the created Sale Order for further editing
         action = {
             'type': 'ir.actions.act_window',
             'name': 'Sale Orders',
             'res_model': 'sale.order',
-            'view_mode': 'tree,form',
-            'domain': [('appointment_id', '=', self.id)],
-            'context': {'default_appointment_id': self.id},
+            'view_mode': 'form',
+            'res_id': created_sale_order.id,
+            'context': {
+                'default_appointment_id': self.id,  # Set the appointment for reference
+            },
         }
+
         return action
-
-
-
-
