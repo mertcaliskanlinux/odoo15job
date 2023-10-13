@@ -24,8 +24,6 @@ class SaleOrder(models.Model):
         for appointment in self:
             appointment.invoice_count = len(appointment.invoice_ids)
 
-
-
     def action_view_sale_appointment(self):
         self.ensure_one()
         return {
@@ -34,7 +32,7 @@ class SaleOrder(models.Model):
             'view_mode': 'form',
             'res_model': 'dr_patients.appointment',
             'res_id': self.appointment_id.id,
-            'context': {'create': False, 'edit': False},
+            'context': {'create': False},
             'target': 'current',
         }
 
@@ -46,14 +44,9 @@ class SaleOrder(models.Model):
             'view_mode': 'form',
             'res_model': 'dr_patients.appointment',
             'res_id': self.appointment_id.id,
-            'context': {'create': True, 'edit': False},
+            'context': {'create': True},
             'target': 'current',
         }
-
-    @api.depends('invoice_ids')
-    def _compute_invoice_count(self):
-        for appointment in self:
-            appointment.invoice_count = len(appointment.invoice_ids)
 
     def action_invoice(self):
         self.ensure_one()
@@ -64,8 +57,8 @@ class SaleOrder(models.Model):
             # Other fields for the invoice, such as partner_id, product lines, etc.
         })
 
-        # Open the created invoice in form view
-        print(invoice)
+        # Optionally, you can manually post (confirm) the invoice
+        invoice.post()
 
         return {
             'type': 'ir.actions.act_window',
@@ -73,6 +66,11 @@ class SaleOrder(models.Model):
             'res_model': 'account.move',
             'view_mode': 'form',
             'res_id': invoice.id,
-            'context': {'create': False, 'edit': False},
+            'context': {'create': False},
             'target': 'current',
         }
+
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+
+    appointment = fields.Many2one('dr_patients.appointment', string='Appointment')

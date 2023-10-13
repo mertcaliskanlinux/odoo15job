@@ -9,9 +9,7 @@
             <field name="model">dr_patients.appointment</field>
             <field name="arch" type="xml">
                 <form string="Appointment Form">
-
                     <header>
-
                         <button name="action_in_progress" string="In Progress" class="btn-primary" confirm="Are you sure that you need to confirm ?" type="object" attrs="{'invisible': [('stage', '!=', 'draft')]}"/>
 
                         <button name="action_done" delete="0" string="Mark As Done" class="btn-primary" type="object" attrs="{'invisible':[('stage', '!=' , 'in_progress')],'readonly':('stage', 'in' , 'in_progress')}"/>
@@ -22,8 +20,6 @@
                                 confirm="Are you sure that you need to cancel ?"
                                 type="object" attrs="{'invisible': [('stage', '=', 'cancel')]}"/>
 
-
-
                         <field name="stage" widget="statusbar" statusbar_visible="draft,done,confirm,cancel"/>
 
                     </header>
@@ -33,8 +29,10 @@
                             <button class="oe_stat_button" type="object" name="action_sale_order" icon="fa-usd">
                                 <field string="Sales" name="sale_order_count" widget="statinfo"/>
                             </button>
+<!--                            <button name="action_view_invoices" string="View Invoices" type="object" icon="fa-file-text-o"/>-->
 
-                            <button class="oe_stat_button" type="object" name="action_invoice" icon="fa-list-alt">
+
+                            <button class="oe_stat_button" type="object" name="action_view_invoices" icon="fa-list-alt">
                                 <field string="Invoices" name="invoice_count" widget="statinfo"/>
                             </button>
 <!--                            <button class="oe_stat_button" type="object" name="action_payment" icon="fa-money">-->

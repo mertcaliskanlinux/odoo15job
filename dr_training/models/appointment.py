@@ -16,17 +16,32 @@ class Appointment(models.Model):
     doctor_full_name = fields.Char(string="Doctor Name", compute="_compute_doctor_full_name", store=True)
     is_readonly = fields.Boolean(string="Is Readonly", compute="_compute_is_readonly")
     appointment_id = fields.Many2one(comodel_name="sale.order", string="Sale Order")
-
     total_amount = fields.Float(string="Total Amount", compute="_compute_total_amount", store=True)
-    pending_amount = fields.Float(string="Pending Amount", compute="_compute_pending_amount", store=True)
-    invoice_ids = fields.One2many('account.move', 'appointment_id', string="Invoices")
-    invoice_count = fields.Integer(string="Invoices", compute="_compute_invoice_count")
-    sale_order_line_ids = fields.One2many('sale.order.line', 'order_id', string="Sale Order Line")
+    sale_order_line_ids = fields.One2many('sale.order.line', 'appointment', string="Sale Order Line")
     sale_order_count = fields.Integer(string="Sale Orders", compute="_compute_sale_order_count")
+    sale_order_id = fields.Many2one(comodel_name="sale.order", string="Sale Order")
+    invoice_ids = fields.One2many('account.move', 'appointment_id', string='Invoice', compute='_compute_invoice_ids')
+    invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
 
+    @api.depends('invoice_ids')
+    def _compute_invoice_ids(self):
+        for appointment in self:
+            appointment.invoice_ids = self.env['account.move'].search([('appointment_id', '=', appointment.id)])
 
+    @api.depends('invoice_ids')
+    def _compute_invoice_count(self):
+        for appointment in self:
+            appointment.invoice_count = len(appointment.invoice_ids)
 
-
+    def action_view_invoices(self):
+        invoices = self.sale_order_id.mapped('invoice_ids')
+        return {
+            'name': 'Invoices',
+            'view_mode': 'tree,form',
+            'res_model': 'account.move',
+            'domain': [('id', 'in', invoices.ids)],
+            'type': 'ir.actions.act_window',
+        }
 
     @api.depends('patient')
     def _compute_patient_full_name(self):
@@ -63,7 +78,6 @@ class Appointment(models.Model):
         return super(Appointment, self).unlink()
 
 
-
     @api.model
     def create(self, vals):
         if vals.get('code', 'New') == 'New':
@@ -87,66 +101,6 @@ class Appointment(models.Model):
             'context': {'default_appointment_id': self.id},
         }
         return action
-
-    def action_invoice(self):
-        self.ensure_one()  # Tek bir kayıt için çalıştığından emin olun.
-
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Invoices',
-            'res_model': 'account.move',
-            'view_mode': 'tree,form',
-            'domain': [('appointment_id', '=', self.id)],
-            'context': {'default_appointment_id': self.id},
-            'stage': 'posted',
-
-        }
-
-
-    @api.depends('sale_order_line_ids')
-    def _compute_total_amount(self):
-        for rec in self:
-            total_amount = sum(rec.sale_order_line_ids.mapped('price_total'))
-            rec.total_amount = total_amount
-
-    @api.depends('sale_order_line_ids', 'sale_order_line_ids.invoice_status')
-    def _compute_pending_amount(self):
-        for rec in self:
-            pending_amount = sum(
-                rec.sale_order_line_ids.filtered(lambda line: line.invoice_status != 'invoiced').mapped(
-                    'price_total'))
-            rec.pending_amount = pending_amount
-
-    def action_sale_order(self):
-        self.ensure_one()  # Ensure you're working with a single record.
-        action = {
-            'type': 'ir.actions.act_window',
-            'name': 'Sale Orders',
-            'res_model': 'sale.order',
-            'view_mode': 'tree,form',
-            'domain': [('appointment_id', '=', self.id)],  # Filter by appointment
-            'context': {'default_appointment_id': self.id},  # Set the default appointment
-        }
-        return action
-
-    def action_invoice(self):
-        self.ensure_one()  # Ensure you're working with a single record.
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Invoices',
-            'res_model': 'account.move',
-            'view_mode': 'tree,form',
-            'domain': [('appointment_id', '=', self.id)],  # Filter by appointment
-            'context': {'default_appointment_id': self.id},  # Set the default appointment
-            'stage': 'posted',
-        }
-
-    @api.depends('appointment_id')
-    def _compute_invoice_count(self):
-        for appointment in self:
-            invoice_count = self.env['account.move'].search_count([('appointment_id', '=', appointment.id)])
-            appointment.invoice_count = invoice_count
-
 
 
 

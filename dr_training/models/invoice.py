@@ -15,6 +15,8 @@ class Invoice(models.Model):
         for order in self:
             order.appointment_count = len(order.appointment_id) if order.appointment_id else 0
 
+
+
     def action_view_sale_appointment(self):
         self.ensure_one()
         return {
@@ -26,3 +28,10 @@ class Invoice(models.Model):
             'context': {'create': False, 'edit': False},
             'target': 'current',
         }
+
+    @api.depends('invoice_ids')
+    def _compute_invoice_count(self):
+        for order in self:
+            order.invoice_count = len(order.invoice_ids)
+            print(f"order.invoice_count: {order.invoice_count} order.invoice_ids: {order.invoice_ids} order.appointment_id: {order.appointment_id}")
+
