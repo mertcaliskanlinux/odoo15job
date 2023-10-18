@@ -6,8 +6,8 @@ class Appointment(models.Model):
 
 
     appointment_date_time = fields.Datetime(string="Appointment Date & Time", required=True)
-    code = fields.Char(string='Code', required=True, index=True, copy=False,
-                       default=lambda self: self.env['ir.sequence'].next_by_code('hospital.appointment') or 'New')
+    code = fields.Char(string='Code', required=True, index=True, copy=False, default=lambda self: self.env['ir.sequence'].next_by_code('hospital.appointment') or 'New')
+
     doctor_id = fields.Many2many(comodel_name="hospital.doctor", string="Doctor")
     patient_id = fields.Many2one(comodel_name="hospital.patient", string="Patient", required=True)
     stage = fields.Selection(string="Stage", selection=[('draft', 'Draft'), ('in_progress', 'In Progress'), ('done', 'Done'),('cancel', 'Cancel')], default='draft', required=True)

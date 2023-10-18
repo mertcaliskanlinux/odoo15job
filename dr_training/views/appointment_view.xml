@@ -21,21 +21,25 @@
                                 type="object" attrs="{'invisible': [('stage', '=', 'cancel')]}"/>
 
                         <field name="stage" widget="statusbar" statusbar_visible="draft,done,confirm,cancel"/>
-
                     </header>
                     <sheet>
 
                         <div class="oe_button_box" name="button_box">
-                            <button class="oe_stat_button" type="object" name="action_sale_order" icon="fa-usd">
+
+                            <button class="oe_stat_button" type="object" name="action_sale_order_tree_view" icon="fa-usd">
                                 <field string="Sales" name="sale_order_count" widget="statinfo"/>
                             </button>
+
                             <button class="oe_stat_button" type="object" name="action_view_invoices" icon="fa-list-alt">
                                 <field string="Invoices" name="invoice_count"  widget="statinfo"/>
                             </button>
 
-<!--                            <button class="oe_stat_button" type="object" name="action_payment" icon="fa-money">-->
+<!--                            <button class="oe_stat_button" type="object" name="action_view_payment" icon="fa-money">-->
 <!--                                <field string="Payments" name="payment_count" widget="statinfo"/>-->
 <!--                            </button>-->
+
+
+
                         </div>
                         <group>
                             <field name="code"/>
@@ -43,6 +47,7 @@
                             <field name="doctor_id" widget="many2many_tags" attrs="{'readonly': [('stage', 'in', ['done', 'cancel'])]}"/>
                             <field name="patient" attrs="{'readonly': [('stage', 'in', ['done', 'cancel'])]}"/>
                         </group>
+                        <button class="oe_highlight" type="object" name="action_sale_order" string="Sale Create"/>
                         <notebook>
                             <page string="Treatments">
                                 <field name="treatment" widget='one2many_list' attrs="{'readonly': [('stage', 'in', ['done', 'cancel'])]}" options="{'no_open': True}">
@@ -58,6 +63,7 @@
                 </form>
             </field>
         </record>
+
 
 
     <record id="appointment_tree" model="ir.ui.view">
