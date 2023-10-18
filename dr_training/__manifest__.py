@@ -8,7 +8,7 @@
     'sequence': -100,
     'summary': """Doctor Management Mert Ç.""",
     'description': "",
-    'depends': ['sale','account'],
+    'depends': ['sale','account','payment','sale_management'],
     'data': [
         'security/ir.model.access.csv',
         'views/menu.xml',
