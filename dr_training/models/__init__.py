@@ -7,3 +7,4 @@ from . import appointment
 from . import treatment
 from . import sale
 from . import invoice
+from . import payment

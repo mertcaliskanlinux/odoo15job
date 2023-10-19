@@ -20,6 +20,7 @@
         'views/sale_view.xml',
         'views/invoice_view.xml',
         'views/wizard_view.xml',
+        'views/payment_view.xml',
     ],
     'application': True,
     'auto_install': False,
