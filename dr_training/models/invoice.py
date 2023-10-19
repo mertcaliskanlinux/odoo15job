@@ -1,18 +1,19 @@
 from odoo import models, fields, api
 
-class Invoice(models.Model):
 
-    _name = 'account.move'
+class Invoice(models.Model):
     _inherit = 'account.move'
 
     appointment_id = fields.Many2one('dr_patients.appointment', string='Appointment')
-    appointment_count = fields.Integer(string='Appointments', compute='_compute_appointment_count')
-    invoice_count = fields.Integer(string='Invoice', compute='_compute_invoice_count')
-    invoice_ids = fields.One2many('account.move', 'appointment_id', string='Invoices')
+    appointment_ids = fields.One2many('dr_patients.appointment', 'account_move_id')
+    appointment_count = fields.Integer(string='Appointment', compute='_compute_appointment_count')
 
+    @api.depends('appointment_id')
+    def _compute_appointment_count(self):
+        for rec in self:
+            rec.appointment_count = len(rec.appointment_ids) if rec.appointment_id else 0
 
-
-    def action_view_sale_appointment(self):
+    def action_view_appointment(self):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
@@ -24,10 +25,10 @@ class Invoice(models.Model):
             'target': 'current',
         }
 
-
-    @api.depends('appointment_id')
-    def _compute_appointment_count(self):
-        for invoice in self:
-            invoice.appointment_count = len(invoice.appointment_id) if invoice.appointment_id else 0
-
-
+    @api.model
+    def create(self, vals):
+        if 'invoice_origin' in vals and vals['invoice_origin']:
+            sale_order = self.env['sale.order'].search([('name', '=', vals['invoice_origin'])])
+            vals['appointment_id'] = sale_order.appointment_id.id
+        rec = super(Invoice, self).create(vals)
+        return rec
