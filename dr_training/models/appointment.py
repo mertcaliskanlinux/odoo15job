@@ -87,9 +87,9 @@ class Appointment(models.Model):
     # Hasta ortağı referansı.
     # Patient partner reference.
     partner_id = fields.Many2one('res.partner', "Patient Partner")
-
     payment_ids = fields.One2many('account.payment', 'appointment_id', string="Payments")
     payment_count = fields.Integer(string='Payments', compute='_compute_payment_count')
+    account_payment_id = fields.Many2one('account.payment')
 
 
 
@@ -126,13 +126,7 @@ class Appointment(models.Model):
             rec.invoice_count = invoice_count
 
 
-    def _compute_payment_count(self):
-        for rec in self:
-            payment_count = self.env['account.payment'].search_count([
-                ('appointment_id', '=', rec.id)
-                
-            ])
-            rec.payment_count = payment_count
+    
 
     
 
@@ -235,6 +229,30 @@ class Appointment(models.Model):
             },
         }
         return action
+    
+    @api.depends('payment_ids')
+    def _compute_payment_ids(self):
+        for rec in self:
+            rec.payment_ids = self.env['account.payment'].search([('appointment_id', '=', rec.id)])
+
+    def _compute_payment_count(self):
+        for rec in self:
+            payment_count = self.env['account.payment'].search_count([
+                ('appointment_id', '=', rec.id)
+            ])
+            rec.payment_count = payment_count
+
+    def action_view_payment(self):
+        self.ensure_one()  
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Payments',
+            'res_model': 'account.payment',
+            'view_mode': 'tree,form',
+            'domain': [('appointment_id', '=', self.id)], 
+            'context': {'default_appointment_id': self.id},  
+            'stage': 'posted',
+        }
 
 
     # Yeni bir satış siparişi oluşturur.
@@ -277,8 +295,5 @@ class Appointment(models.Model):
             'target': 'current',
         }
 
-    def action_payment(self):
-        print("action button")
-
-        self.ensure_one()
+    
         

@@ -41,15 +41,6 @@ class Invoice(models.Model):
             'target': 'current',
         }
 
-    # Yeni bir fatura kaydı oluştururken, randevu bilgisini alır.
-    # Fetches the appointment information when creating a new invoice record.
-    # @api.model
-    # def create(self, vals):
-    #     res = super(Invoice, self).create(vals)
-    #     if res.appointment_id:
-    #         res.appointment_id.account_move_id = res.id
-    #     return res
-    
 
     @api.model
     def create(self, vals):

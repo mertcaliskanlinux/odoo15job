@@ -34,7 +34,7 @@
                                 <field string="Invoices" name="invoice_count"  widget="statinfo"/>
                             </button>
 
-                           <button class="oe_stat_button" type="object" name="action_payment" icon="fa-money">
+                           <button class="oe_stat_button" type="object" name="action_view_payment" icon="fa-money">
                                <field string="Payments" name="payment_count" widget="statinfo"/>
                            </button>
 
