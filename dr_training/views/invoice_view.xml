@@ -10,8 +10,16 @@
                     <div class="o_stat_info">
                         <field name="appointment_count" class="o_stat_value"/>
                         <span class="o_stat_text">Appointments</span>
+<<<<<<< HEAD
                     </div>
                 </button>
+=======
+                        
+                        
+                    </div>
+                </button>
+                
+>>>>>>> mert1
             </xpath>
         </field>
     </record>

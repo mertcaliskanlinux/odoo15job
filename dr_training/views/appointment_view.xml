@@ -30,6 +30,7 @@
                                 <field string="Sales" name="sale_order_count" widget="statinfo"/>
                             </button>
 
+<<<<<<< HEAD
                             <button class="oe_stat_button" type="object" name="action_view_invoices" icon="fa-list-alt">
                                 <field string="Invoices" name="invoice_count"  widget="statinfo"/>
                             </button>
@@ -39,6 +40,15 @@
 <!--                            </button>-->
 
 
+=======
+                            <button class="oe_stat_button" type="object" name="action_view_invoice" icon="fa-list-alt">
+                                <field string="Invoices" name="invoice_count"  widget="statinfo"/>
+                            </button>
+
+                           <button class="oe_stat_button" type="object" name="action_view_payment" icon="fa-money">
+                               <field string="Payments" name="payment_count" widget="statinfo"/>
+                           </button>
+>>>>>>> mert1
 
                         </div>
                         <group>
@@ -47,7 +57,11 @@
                             <field name="doctor_id" widget="many2many_tags" attrs="{'readonly': [('stage', 'in', ['done', 'cancel'])]}"/>
                             <field name="patient" attrs="{'readonly': [('stage', 'in', ['done', 'cancel'])]}"/>
                         </group>
+<<<<<<< HEAD
                         <button class="oe_highlight" type="object" name="action_sale_order" string="Sale Create"/>
+=======
+                        <button class="oe_highlight" type="object" name="create_sale_order" string="Sale Create"/>
+>>>>>>> mert1
                         <notebook>
                             <page string="Treatments">
                                 <field name="treatment" widget='one2many_list' attrs="{'readonly': [('stage', 'in', ['done', 'cancel'])]}" options="{'no_open': True}">

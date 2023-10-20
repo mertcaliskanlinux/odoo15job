@@ -20,7 +20,11 @@
         'views/sale_view.xml',
         'views/invoice_view.xml',
         'views/wizard_view.xml',
+<<<<<<< HEAD
         'views/payment_view.xml'
+=======
+        'views/payment_view.xml',
+>>>>>>> mert1
     ],
     'application': True,
     'auto_install': False,

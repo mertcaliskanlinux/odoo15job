@@ -9,12 +9,19 @@
                 <button name="action_view_appointment" type="object" class="oe_stat_button" icon="fa-calendar">
                     <div class="o_stat_info">
                         <field name="appointment_count" class="o_stat_value"/>
+<<<<<<< HEAD
                         <span class="o_stat_text">Appointments</span>
                     </div>
                 </button>
             </xpath>
 
 
+=======
+                        <span class="o_stat_text">Appointment</span>
+                    </div>
+                </button>
+            </xpath>
+>>>>>>> mert1
         </field>
     </record>
 </odoo>
