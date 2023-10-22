@@ -9,5 +9,30 @@ access.sale.order,access.sale.order,model_sale_order,base.group_user,1,1,1,1
 
 
 
+access.dr_patients.doctor,access.dr_patients.doctor,model_dr_patients_doctor,hospital_doctor_access,1,1,0,0
+access.dr_patients.department,access.dr_patients.department,model_dr_patients_department,hospital_doctor_access,1,1,0,0
+access.dr_patients.patient,access.dr_patients.patient,model_dr_patients_patient,hospital_doctor_access,1,0,0,0
+access.dr_patients.appointment,access.dr_patients.appointment,model_dr_patients_appointment,hospital_doctor_access,1,1,1,0
+access.dr_patients.treatment,access.dr_patients.treatment,model_dr_patients_treatment,hospital_doctor_access,1,1,1,0
+access.dr_patients.wizard,access.dr_patients.wizard,model_dr_patients_appointment_wizard,hospital_doctor_access,1,1,1,0
+
+
+access.dr_patients.doctor,access.dr_patients.doctor,model_dr_patients_doctor,hospital_admin_access,1,1,1,1
+access.dr_patients.department,access.dr_patients.department,model_dr_patients_department,hospital_admin_access,1,1,1,1
+access.dr_patients.patient,access.dr_patients.patient,model_dr_patients_patient,hospital_admin_access,1,1,1,1
+access.dr_patients.appointment,access.dr_patients.appointment,model_dr_patients_appointment,hospital_admin_access,1,1,1,1
+access.dr_patients.treatment,access.dr_patients.treatment,model_dr_patients_treatment,hospital_admin_access,1,1,1,1
+access.dr_patients.wizard,access.dr_patients.wizard,model_dr_patients_appointment_wizard,hospital_admin_access,1,1,1,1
+
+
+
+access.dr_patients.doctor,access.dr_patients.doctor,model_dr_patients_doctor,hospital_patient_access,0,0,0,0
+access.dr_patients.department,access.dr_patients.department,model_dr_patients_department,hospital_patient_access,1,1,1,1
+access.dr_patients.patient,access.dr_patients.patient,model_dr_patients_patient,hospital_patient_access,1,0,0,0
+access.dr_patients.appointment,access.dr_patients.appointment,model_dr_patients_appointment,hospital_patient_access,1,0,0,0
+access.dr_patients.treatment,access.dr_patients.treatment,model_dr_patients_treatment,hospital_patient_access,1,0,0,0
+access.dr_patients.wizard,access.dr_patients.wizard,model_dr_patients_appointment_wizard,hospital_patient_access,1,0,0,0
+
+
 
 

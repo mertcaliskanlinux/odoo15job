@@ -3,7 +3,6 @@
 
 <odoo>
 
-
     <record id="view_hospital_appointment_form" model="ir.ui.view">
             <field name="name">dr_patients.appointment.form</field>
             <field name="model">dr_patients.appointment</field>

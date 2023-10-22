@@ -41,7 +41,7 @@ class Invoice(models.Model):
             'target': 'current',
         }
 
-
+    
     @api.model
     def create(self, vals):
         print("create account.move")

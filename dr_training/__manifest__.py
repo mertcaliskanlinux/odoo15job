@@ -11,6 +11,7 @@
     'depends': ['sale','account',],
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/menu.xml',
         'views/doctor_view.xml',
         'views/department_view.xml',
@@ -21,6 +22,7 @@
         'views/invoice_view.xml',
         'views/wizard_view.xml',
         'views/payment_view.xml',
+        
     ],
     'application': True,
     'auto_install': False,

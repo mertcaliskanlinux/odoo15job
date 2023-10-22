@@ -22,8 +22,7 @@ class Appointment(models.Model):
 
     # Randevu kodu.
     # Appointment code.
-    code = fields.Char(string='Code', required=True, index=True, copy=False, default=lambda self: self.env['ir.sequence'].next_by_code('dr_patients.appointment') or 'New')
-
+    code = fields.Char(string="Code",index=True)
     # Doktor referansı (Many2Many ilişki).
     # Doctor reference (Many2Many relationship).
     doctor_id = fields.Many2many(comodel_name="dr_patients.doctor", string="Doctor")
@@ -92,7 +91,9 @@ class Appointment(models.Model):
     account_payment_id = fields.Many2one('account.payment')
 
 
-
+    _sql_constraints = [
+            ('unique_code', 'unique(code)', 'Code must be unique.'),
+        ]
     
 
     
@@ -121,12 +122,13 @@ class Appointment(models.Model):
     def _compute_invoice_count(self):
         for rec in self:
             invoice_count = self.env['account.move'].search_count([
-                ('appointment_id', '=', rec.id)
+                ('appointment_id', '=', rec.id), ('state', '=', 'posted'),
+                ('payment_state', 'in', ('in_payment', 'paid'))
+                
+                # Add your search criteria here.
             ])
             rec.invoice_count = invoice_count
 
-
-    
 
     
 
@@ -140,7 +142,9 @@ class Appointment(models.Model):
             'name': 'Invoices',
             'res_model': 'account.move',
             'view_mode': 'tree,form',
-            'domain': [('appointment_id', '=', self.id)],  # Randevuya göre filtrele.
+            'domain': [('appointment_id', '=', self.id), ('state', '=', 'posted'),
+                       ('payment_state', 'in', ('in_payment', 'paid'))],  # Randevuya göre filtrele.
+            
                                                            # Filter by appointment.
             'context': {'default_appointment_id': self.id},  # Varsayılan randevuyu ayarla.
                                                              # Set the default appointment.
@@ -201,8 +205,8 @@ class Appointment(models.Model):
     # Ensures the code is automatically assigned when a new appointment is created.
     @api.model
     def create(self, vals):
-        if vals.get('code', 'New') == 'New':
-            vals['code'] = self.env['ir.sequence'].next_by_code('dr_patients.appointment') or 'New'
+        print("Appointment create vals ", vals)
+        vals['code'] = self.env['ir.sequence'].next_by_code("dr_patients.appointment")
         return super(Appointment, self).create(vals)
 
     # Randevu kodunun benzersiz olup olmadığını kontrol eder.
@@ -212,6 +216,7 @@ class Appointment(models.Model):
         for record in self:
             if self.env['dr_patients.appointment'].search_count([('code', '=', record.code)]) > 1:
                 raise exceptions.ValidationError('The Code must be unique.')
+            
 
     # Belirli bir randevu için satış siparişini görüntülemek üzere bir aksiyon döndürür.
     # Returns an action to view the sale order for a specific appointment.
@@ -229,12 +234,15 @@ class Appointment(models.Model):
             },
         }
         return action
-    
+    #burası satış siparişi oluştururken kullanılıyor
+    # This is used when creating a sale order.
     @api.depends('payment_ids')
     def _compute_payment_ids(self):
         for rec in self:
             rec.payment_ids = self.env['account.payment'].search([('appointment_id', '=', rec.id)])
 
+    # Belirli bir randevu için ödemeleri görüntülemek üzere bir aksiyon döndürür.
+    # Returns an action to view the payments for a specific appointment.
     def _compute_payment_count(self):
         for rec in self:
             payment_count = self.env['account.payment'].search_count([
@@ -242,6 +250,8 @@ class Appointment(models.Model):
             ])
             rec.payment_count = payment_count
 
+    #burası ödeme oluştururken kullanılıyor
+    # This is used when creating a payment.
     def action_view_payment(self):
         self.ensure_one()  
         return {

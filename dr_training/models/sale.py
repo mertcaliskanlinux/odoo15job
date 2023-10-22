@@ -3,6 +3,7 @@ from odoo import models, fields, api
 # Satış Siparişi modelini genişletiyor.
 # Extends the Sale Order model.
 class SaleOrder(models.Model):
+    
     _inherit = 'sale.order'
     
     appointment_id = fields.Many2one('dr_patients.appointment', string='Appointment') # Randevu /* Appointment */

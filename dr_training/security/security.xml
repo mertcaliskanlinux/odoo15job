@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+
+        <record model="ir.module.category" id="dr_training_module_management">
+             <field name="name">Hospital</field>
+             <field name="description">Doctor, patient and admin access levels for Hospital module</field>
+        </record>
+      
+        <record id="hospital_doctor_access" model="res.groups">
+            <field name="name">Doctor</field>
+            <field name="category_id" ref="dr_training.dr_training_module_management"/>
+        </record>
+
+        <record id="hospital_admin_access" model="res.groups">
+            <field name="name">Admin</field>
+            <field name="category_id" ref="dr_training.dr_training_module_management"/>
+        </record>
+
+        <record id="hospital_patient_access" model="res.groups">
+            <field name="name">Patient</field>
+            <field name="category_id" ref="dr_training.dr_training_module_management"/>
+        </record>
+
+    </data>
+</odoo>
